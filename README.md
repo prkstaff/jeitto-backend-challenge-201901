@@ -1,4 +1,4 @@
-#Desafio Backend do Jeitto
+# Desafio Backend do Jeitto
 
 Este desafio tem como intuito testar as habilidades de desenvolvimento e arquitetura de software do candidato à uma vaga no time de engenharia do Jeitto.
 Não foque apenas em entregar este projeto, ele será sim avaliado porém foque mais em aprender durante o processo e tirar o máximo de proveito possível desta experiência.
@@ -100,10 +100,10 @@ Exemplo 2.3: GET /PhoneRecharges?phone_number=5511999999999
 Obs.: Os demais métodos não deverão ser permitidos para este recurso.
 
 
-##Como enviar sua sua solução
+## Como enviar sua sua solução
 Para participar você deverá fazer um fork deste repositório e submeter as alterações apenas para a sua cópia. Não faça um PR para este repositório, apenas envie um link para o avaliador que está em contato com você.
 
-O que **queremos** ver
+O que **queremos** ver:
 - Python 3.
 - Testes bem escritos e com uma boa cobertura.
 - Legibilidade e manutenibilidade de código.
@@ -112,7 +112,7 @@ O que **queremos** ver
 - Tratamento de erros.
 - Organização e insruções de como executar o projeto.
 
-O que **gostariamos** de ver
+O que **gostariamos** de ver:
 - Documentação fácil e bem escrita.
 - Utilização de docker.
 - Processamento assíncrono.
