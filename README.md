@@ -129,11 +129,11 @@ Perguntas que devem ser respondidas
 - Python é a melhor escolha para esta atividade? Por que?
 
 
-##Trilha sonora recomendada
+## Trilha sonora recomendada
 - [AC/DC Radio](https://open.spotify.com/user/spotify/playlist/37i9dQZF1E4sEEhVjuqbvL?si=uw6fr-VcTVSopgvRL0koWw)
 
 
-##Leituras recomendadas
+## Leituras recomendadas
 - [Small acts manifesto](http://smallactsmanifesto.org/) sobre comportamento humano e social.
 - [The Twelve-Factor App](https://12factor.net/pt_br/) é manifesto sobre o desenvolvimento e boas práticas para facilitar a manutenção de softwares.
 - [Design Patterns for Humans](https://github.com/kamranahmedse/design-patterns-for-humans) texto excelente explicando e mostrando exemplos de uso de padrões de projetos.
