@@ -5,7 +5,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-
 # Flask stuff:
 instance/
 .webassets-cache
@@ -23,3 +22,6 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# my personal notes
+notes.txt
