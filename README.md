@@ -1,4 +1,4 @@
-# Desafio Jeitto para back-end - Api Restful de recarga telefonica  
+# Jeitto Backend Challenge - Restful API for Phone Recharge
 
 ## Requirements:
 - Python3 

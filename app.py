@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-app = Flask(__name__)
+from settings import app
 
 
 @app.route('/CompanyProducts', methods=["GET"])
