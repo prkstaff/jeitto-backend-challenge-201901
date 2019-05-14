@@ -9,12 +9,7 @@ def get_companies_portfolio():
     for company in Company.query.all():
         portfolio = {}
         portfolio["company_id"] = company.id
-        portfolio["products"] = []
-        for product in CompanyProduct.query.filter_by(company_id=company.id):
-            portfolio["products"].append({
-                "id": product.id,
-                "value": product.value
-            })
+        portfolio["products"] = CompanyProduct.get_list_of_products_from_company(company.id)
         portfolios.append(portfolio)
     return jsonify(portfolios)
 

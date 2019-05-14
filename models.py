@@ -19,6 +19,12 @@ class CompanyProduct(db.Model):
     value = Column(Float, nullable=False)
     company_id = Column(String, ForeignKey('Company.id'))
 
+    def json(self):
+        return {"id": self.id, "value": self.value}
+
+    def get_list_of_products_from_company(_company_id):
+        return [product.json() for product in CompanyProduct.query.filter_by(company_id=_company_id)]
+
 
 class PhoneRecharge(db.Model):
     __tablename__ = "PhoneRecharge"
