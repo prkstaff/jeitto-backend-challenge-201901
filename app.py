@@ -1,26 +1,22 @@
 from flask import Flask, jsonify
 from settings import app
+from models import CompanyProduct, Company
 
 
 @app.route('/CompanyProducts', methods=["GET"])
-def HelloWorld():
-    companies_portfolio = [
-       {
-           "company_id": "claro_11",
-           "products":[
-               {"id": "claro_10", "value": 10.0},
-               {"id": "claro_20", "value": 20.0}
-           ]
-       },
-       {
-           "company_id": "tim_11",
-           "products":[
-               {"id": "tim_10", "value": 10.0},
-               {"id": "tim_20", "value": 20.0}
-           ]
-       }
-    ]
-    return jsonify(companies_portfolio)
+def get_companies_portfolio():
+    portfolios = []
+    for company in Company.query.all():
+        portfolio = {}
+        portfolio["company_id"] = company.id
+        portfolio["products"] = []
+        for product in CompanyProduct.query.filter_by(company_id=company.id):
+            portfolio["products"].append({
+                "id": product.id,
+                "value": product.value
+            })
+        portfolios.append(portfolio)
+    return jsonify(portfolios)
 
 
 app.run(host='0.0.0.0')
