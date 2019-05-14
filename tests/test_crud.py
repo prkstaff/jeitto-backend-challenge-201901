@@ -38,12 +38,16 @@ class TestCrud(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         portfolios = json.loads(response.data)
-        for portfolio in portfolios:
-            self.assertTrue(all(['company_id' in portfolio, 'products' in portfolio]))
-            for product in portfolio['products']:
-                self.assertTrue(all(['id' in product, 'value' in product]))
-                self.assertTrue(type(product['value']), float)
 
+        portfolios_expect = [{'company_id': 'claro_11', 
+                              'products': [
+                                  {'id': 'claro_10', 'value': 10.0}, 
+                                  {'id': 'claro_20', 'value': 20.0}]}, 
+                             {'company_id': 'tim_11', 
+                              'products': [
+                                  {'id': 'tim_10', 'value': 10.0}, 
+                                  {'id': 'tim_20', 'value': 20.0}]}
+                             ]
     def tearDown(self):
         db.session.remove()
         db.drop_all()
