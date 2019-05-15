@@ -76,6 +76,10 @@ class TestCrud(unittest.TestCase):
         # Assert status code
         self.assertEqual(response2.status_code, 404)
 
+        expected_error = {
+            'error': 'Company with id claro_xy was not found'}
+        self.assertEqual(expected_error, json.loads(response2.data))
+
     def tearDown(self):
         db.session.remove()
         db.drop_all()
