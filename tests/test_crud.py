@@ -67,6 +67,15 @@ class TestCrud(unittest.TestCase):
                 {'id': 'claro_20', 'value': 20.0}]}
         self.assertEqual(portfolio_expected, json.loads(response.data))
 
+        # non-existent company ID test
+        response2 = self.client.get("/CompanyProducts/claro_xy")
+
+        # assert Json Header
+        self.assertEqual('application/json', response2.headers['Content-Type'])
+
+        # Assert status code
+        self.assertEqual(response2.status_code, 404)
+
     def tearDown(self):
         db.session.remove()
         db.drop_all()

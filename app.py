@@ -17,9 +17,9 @@ def get_companies_portfolio():
 
 @app.route('/CompanyProducts/<company_id>', methods=['GET'])
 def get_company_products(company_id):
-    company = CompanyProduct.query.filter_by(id=company_id)
+    company = Company.query.filter_by(id=company_id)
+    company = company.first()
     if company:
-        company = company.first()
         data = {
             "company": company_id,
             "products": CompanyProduct.get_list_of_products_from_company(company_id)
@@ -30,6 +30,7 @@ def get_company_products(company_id):
             "error": "Company with id {} was not found".format(company_id)}
         response = Response(json.dumps(invalid_company_id_msg),
                             status=404, mimetype='application/json')
+        return response
 
 
 app.run(host='0.0.0.0')
