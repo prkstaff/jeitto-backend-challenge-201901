@@ -50,6 +50,23 @@ class TestCrud(unittest.TestCase):
                  {'id': 'tim_20', 'value': 20.0}]}]
         self.assertEqual(portfolios, portfolios_expect)
 
+    def test_get_company_portfolio(self):
+        self.populate_some_data()
+        response = self.client.get("/CompanyProducts/claro_11")
+
+        # assert Json Header
+        self.assertEqual('application/json', response.headers['Content-Type'])
+
+        # Assert status code
+        self.assertEqual(response.status_code, 200)
+
+        portfolio_expected = {
+            'company': 'claro_11',
+            'products': [
+                {'id': 'claro_10', 'value': 10.0},
+                {'id': 'claro_20', 'value': 20.0}]}
+        self.assertEqual(portfolio_expected, json.loads(response.data))
+
     def tearDown(self):
         db.session.remove()
         db.drop_all()
