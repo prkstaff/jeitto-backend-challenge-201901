@@ -3,7 +3,6 @@ from app import app
 import json
 from models import db, Company, CompanyProduct, PhoneRecharge
 
-
 class TestCrud(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
@@ -79,6 +78,25 @@ class TestCrud(unittest.TestCase):
         expected_error = {
             'error': 'Company with id claro_xy was not found'}
         self.assertEqual(expected_error, json.loads(response2.data))
+
+
+    def test_do_recharge(self):
+        self.populate_some_data()
+        new_recharge = {
+           "company_id": "claro_11",
+           "product_id": "claro_10",
+           "phone_number": "5511999999999",
+           "value": 10.00
+        }
+        response = self.client.post('/PhoneRecharges', json=new_recharge, follow_redirects=True)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.headers['Location'], 'http://localhost/PhoneRecharges?id=1')
+        self.assertEqual('application/json', response.headers['Content-Type'])
+        # test wrong phone
+        # test with wrong company ID
+        # test with wrong product id
+        # test with wrong value 
+
 
     def tearDown(self):
         db.session.remove()
