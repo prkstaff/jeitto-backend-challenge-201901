@@ -62,7 +62,7 @@ def do_phone_recharge():
         invalid_request_msg = {
             "error": "Missing Parameter"
         }
-        response  = Response(json.dumps(invalid_request_msg),
+        response = Response(json.dumps(invalid_request_msg),
                              status=422, mimetype="application/json")
         return response
 # {

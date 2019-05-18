@@ -2,6 +2,7 @@ import unittest
 from app import app
 import json
 from models import db, Company, CompanyProduct, PhoneRecharge
+import copy
 
 class TestCrud(unittest.TestCase):
     def setUp(self):
@@ -25,16 +26,16 @@ class TestCrud(unittest.TestCase):
         db.session.add(company2_prod2)
         db.session.commit()
 
+    def check_app_json_and_status_code(self, response, expected_code):
+        self.assertEqual('application/json', response.headers['Content-Type'])
+        self.assertEqual(response.status_code, expected_code)
+
     def test_get_companies_portfolio(self):
         self.populate_some_data()
         response = self.client.get("/CompanyProducts")
         headers = response.headers
 
-        # assert Json Header
-        self.assertEqual('application/json', headers['Content-Type'])
-
-        # assert status code
-        self.assertEqual(response.status_code, 200)
+        self.check_app_json_and_status_code(response, 200)
 
         portfolios = json.loads(response.data)
 
@@ -53,11 +54,7 @@ class TestCrud(unittest.TestCase):
         self.populate_some_data()
         response = self.client.get("/CompanyProducts/claro_11")
 
-        # assert Json Header
-        self.assertEqual('application/json', response.headers['Content-Type'])
-
-        # Assert status code
-        self.assertEqual(response.status_code, 200)
+        self.check_app_json_and_status_code(response, 200)
 
         portfolio_expected = {
             'company': 'claro_11',
@@ -69,16 +66,11 @@ class TestCrud(unittest.TestCase):
         # non-existent company ID test
         response2 = self.client.get("/CompanyProducts/claro_xy")
 
-        # assert Json Header
-        self.assertEqual('application/json', response2.headers['Content-Type'])
-
-        # Assert status code
-        self.assertEqual(response2.status_code, 404)
+        self.check_app_json_and_status_code(response2, 404)
 
         expected_error = {
             'error': 'Company with id claro_xy was not found'}
         self.assertEqual(expected_error, json.loads(response2.data))
-
 
     def test_do_recharge(self):
         self.populate_some_data()
@@ -88,11 +80,18 @@ class TestCrud(unittest.TestCase):
            "phone_number": "5511999999999",
            "value": 10.00
         }
-        response = self.client.post('/PhoneRecharges', json=new_recharge, follow_redirects=True)
+        # test valid recharge
+
+        response = self.client.post('/PhoneRecharges', json=new_recharge)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.headers['Location'], 'http://localhost/PhoneRecharges?id=1')
-        self.assertEqual('application/json', response.headers['Content-Type'])
-        # test wrong phone
+
+        # test with wrong number
+        recharge_with_wrong_number = copy.deepcopy(new_recharge)
+        recharge_with_wrong_number['phone_number'] = "969997509"
+        response = self.client.post('/PhoneRecharges', json=recharge_with_wrong_number)
+        self.check_app_json_and_status_code(response, 422)
+        
         # test with wrong company ID
         # test with wrong product id
         # test with wrong value 
