@@ -48,7 +48,7 @@ class PhoneRecharge(db.Model):
         company_product = CompanyProduct.query.filter_by(
             id=_product_id, company_id=_company_id, value=_value)
 
-        if not company_product:
+        if not company_product or company_product.count() < 1:
             logger.info(status_message.format('Failed, not recharge option'))
             return {'error': 'Not a valid Recharge option'}
 

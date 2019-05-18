@@ -80,8 +80,8 @@ class TestCrud(unittest.TestCase):
            "phone_number": "5511999999999",
            "value": 10.00
         }
-        # test valid recharge
 
+        # test valid recharge
         response = self.client.post('/PhoneRecharges', json=new_recharge)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.headers['Location'], 'http://localhost/PhoneRecharges?id=1')
@@ -91,10 +91,28 @@ class TestCrud(unittest.TestCase):
         recharge_with_wrong_number['phone_number'] = "969997509"
         response = self.client.post('/PhoneRecharges', json=recharge_with_wrong_number)
         self.check_app_json_and_status_code(response, 422)
+        self.assertEqual(json.loads(response.data), {"error": "Not acceptable phone format"})
         
         # test with wrong company ID
+        recharge_with_wrong_cid = copy.deepcopy(new_recharge)
+        recharge_with_wrong_cid['company_id'] = "claro_0"
+        response = self.client.post('/PhoneRecharges', json=recharge_with_wrong_cid)
+        self.check_app_json_and_status_code(response, 422)
+        self.assertEqual(json.loads(response.data), {'error': 'Not a valid Recharge option'})
+
         # test with wrong product id
+        recharge_with_wrong_product_id = copy.deepcopy(new_recharge)
+        recharge_with_wrong_product_id['product_id'] = 'claro_0'
+        response = self.client.post('PhoneRecharges', json=recharge_with_wrong_product_id)
+        self.check_app_json_and_status_code(response, 422)
+        self.assertEqual(json.loads(response.data), {'error': 'Not a valid Recharge option'})
+
         # test with wrong value 
+        recharge_with_wrong_value = copy.deepcopy(new_recharge)
+        recharge_with_wrong_value['value'] = 7.0
+        response = self.client.post('PhoneRecharges', json=recharge_with_wrong_value)
+        self.check_app_json_and_status_code(response, 422)
+        self.assertEqual(json.loads(response.data), {'error': 'Not a valid Recharge option'})
 
 
     def tearDown(self):
