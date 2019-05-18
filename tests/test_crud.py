@@ -52,7 +52,7 @@ class TestCrud(unittest.TestCase):
 
     def test_get_company_portfolio(self):
         self.populate_some_data()
-        response = self.client.get("/CompanyProducts/claro_11")
+        response = self.client.get("/CompanyProducts?company_id=claro_11")
 
         self.check_app_json_and_status_code(response, 200)
 
@@ -64,7 +64,7 @@ class TestCrud(unittest.TestCase):
         self.assertEqual(portfolio_expected, json.loads(response.data))
 
         # non-existent company ID test
-        response2 = self.client.get("/CompanyProducts/claro_xy")
+        response2 = self.client.get("/CompanyProducts?company_id=claro_xy")
 
         self.check_app_json_and_status_code(response2, 404)
 
