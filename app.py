@@ -19,10 +19,8 @@ def get_companies_portfolio():
             }
             return jsonify(data)
         else:
-            invalid_company_id_msg = {
-                "error": "Company with id {} was not found".format(company_id)}
-            response = Response(json.dumps(invalid_company_id_msg),
-                                status=404, mimetype='application/json')
+            response = Response(json.dumps({}),
+                                status=204, mimetype='application/json')
             return response
     else:
         portfolios = []
@@ -37,7 +35,23 @@ def get_companies_portfolio():
 
 @app.route('/PhoneRecharges', methods=['GET'])
 def get_recharge():
-    pass
+    args = request.args
+    if 'id' in args:
+        recharge = PhoneRecharge.get_recharge_by_id(args['id'])
+        if not recharge:
+            return Response(json.dumps(recharge), status=204, mimetype='application/json')
+        else: 
+            return Response(json.dumps(recharge), status=200, mimetype='application/json')
+    elif 'phone_number' in args:
+        recharge = PhoneRecharge.get_recharge_by_phone_number(args['phone_number'])
+        if not recharge:
+            return Response(json.dumps(recharge), status=204, mimetype='application/json')
+        else: 
+            return Response(json.dumps(recharge), status=200, mimetype='application/json')
+    else:
+        return Response(json.dumps({
+            'error': 'Route requires filter like phone_number or id'}),
+                        status=422, mimetype='application/json')
 
 
 @app.route('/PhoneRecharges', methods=['POST'])

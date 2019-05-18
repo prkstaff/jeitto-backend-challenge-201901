@@ -6,7 +6,6 @@ from settings import logger
 
 db = SQLAlchemy(app)
 
-# Class Company
 
 class Company(db.Model):
     __tablename__ = "Company"
@@ -36,6 +35,38 @@ class PhoneRecharge(db.Model):
     product_id = Column(String, ForeignKey('CompanyProduct.id'))
     phone_number = Column(String, nullable=False)
     value = Column(Float, nullable=False)
+
+    def get_datetime_string(self):
+        return self.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
+    def json(self):
+        return {
+            "id": self.id,
+            "created_at": self.get_datetime_string(),
+            "company_id": self.company_id,
+            "product_id": self.product_id,
+            "phone_number": self.phone_number,
+            "value": self.value
+        }
+
+    def get_recharge_by_id(_id):
+        recharge = PhoneRecharge.query.filter_by(id=_id)
+        if recharge.count() < 1:
+            logger.info('Recharge with recharge id {} not found'.format(_id))
+            return None
+        else:
+            recharge = recharge.first()
+            return recharge.json()
+
+    def get_recharge_by_phone_number(phone_number):
+        recharge = PhoneRecharge.query.filter_by(phone_number=phone_number)
+        if recharge.count() < 1:
+            logger.info('Recharges with phone_number {} not found'.format(
+                phone_number))
+            return None
+        else:
+            recharges = recharge
+            return [recharge.json() for recharge in recharges]
 
     def do_recharge(_company_id, _product_id, phone, _value):
         status_message = "Attempt to Recharge phone: {},"\

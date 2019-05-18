@@ -3,6 +3,7 @@ from app import app
 import json
 from models import db, Company, CompanyProduct, PhoneRecharge
 import copy
+import datetime
 
 class TestCrud(unittest.TestCase):
     def setUp(self):
@@ -24,6 +25,13 @@ class TestCrud(unittest.TestCase):
         db.session.add(company2)
         db.session.add(company2_prod1)
         db.session.add(company2_prod2)
+        db.session.commit()
+        _created_at = datetime.datetime.strptime(
+            "2019-05-18T18:42:13.343109Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+        product_recharge =  PhoneRecharge(
+            created_at=_created_at, company_id='claro_11',
+            product_id='claro_10', phone_number='5511999999999', value=10.0)
+        db.session.add(product_recharge)
         db.session.commit()
 
     def check_app_json_and_status_code(self, response, expected_code):
@@ -66,11 +74,7 @@ class TestCrud(unittest.TestCase):
         # non-existent company ID test
         response2 = self.client.get("/CompanyProducts?company_id=claro_xy")
 
-        self.check_app_json_and_status_code(response2, 404)
-
-        expected_error = {
-            'error': 'Company with id claro_xy was not found'}
-        self.assertEqual(expected_error, json.loads(response2.data))
+        self.check_app_json_and_status_code(response2, 204)
 
     def test_do_recharge(self):
         self.populate_some_data()
@@ -84,7 +88,7 @@ class TestCrud(unittest.TestCase):
         # test valid recharge
         response = self.client.post('/PhoneRecharges', json=new_recharge)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.headers['Location'], 'http://localhost/PhoneRecharges?id=1')
+        self.assertEqual(response.headers['Location'], 'http://localhost/PhoneRecharges?id=2')
 
         # test with wrong number
         recharge_with_wrong_number = copy.deepcopy(new_recharge)
@@ -113,6 +117,48 @@ class TestCrud(unittest.TestCase):
         response = self.client.post('PhoneRecharges', json=recharge_with_wrong_value)
         self.check_app_json_and_status_code(response, 422)
         self.assertEqual(json.loads(response.data), {'error': 'Not a valid Recharge option'})
+
+
+    def test_get_recharges(self):
+        self.populate_some_data()
+
+        # Error when no filter passed
+        response = self.client.get('/PhoneRecharges', json={})
+        self.check_app_json_and_status_code(response, 422)
+        self.assertEqual(json.loads(response.data), {
+            "error": "Route requires filter like phone_number or id"})
+
+        # filter by phone number
+        response = self.client.get(
+            '/PhoneRecharges?phone_number=5511999999999')
+        self.check_app_json_and_status_code(response, 200)
+        self.assertEqual(json.loads(response.data), [{ 
+            "id": 1,
+            "created_at": "2019-05-18T18:42:13.343109Z", 
+            "company_id": "claro_11",
+            "product_id": "claro_10", 
+            "phone_number": "5511999999999",
+            "value": 10.00 }])
+
+        # wrong phone number
+        response = self.client.get('/PhoneRecharges?phone_number=5511999000999')
+        self.check_app_json_and_status_code(response, 204)
+
+        # filter by recharge id
+        response = self.client.get('/PhoneRecharges?id=1')
+        self.check_app_json_and_status_code(response, 200)
+        self.assertEqual(json.loads(response.data), { 
+            "id": 1,
+            "created_at": "2019-05-18T18:42:13.343109Z", 
+            "company_id": "claro_11",
+            "product_id": "claro_10", 
+            "phone_number": "5511999999999",
+            "value": 10.00 })
+
+        # wrong recharge id
+        response = self.client.get('/PhoneRecharges?id=2')
+        self.check_app_json_and_status_code(response, 204)
+
 
 
     def tearDown(self):
