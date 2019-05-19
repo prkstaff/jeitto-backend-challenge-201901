@@ -42,3 +42,5 @@ source venv/bin/activate
 nosetests
 ```
 
+## Checking swagger UI
+Run the server and access http://localhost:5000/apidocs/

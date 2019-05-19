@@ -1,0 +1,19 @@
+parameters:
+  - name: company_id
+    in: path
+    type: string
+    description: "Id of the Company"
+responses:
+  200:
+    description: Got Object
+    examples:
+      application/json: >
+        {
+          "company_id": "claro_11",
+          "products": [
+            {"id": "claro_10", "value": 10.0},
+            {"id": "claro_20", "value": 20.0}
+           ]
+        }
+  204:
+    description: Not found

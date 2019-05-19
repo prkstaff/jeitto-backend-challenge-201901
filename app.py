@@ -5,9 +5,11 @@ from decorators import token_required
 import json
 import datetime
 import jwt
+from flasgger import swag_from
 
 
 @app.route('/login', methods=['POST'])
+@swag_from('swagger/login.yaml')
 def get_token():
     request_data = request.get_json()
     username = str(request_data['username'])
@@ -24,6 +26,7 @@ def get_token():
 
 @app.route('/CompanyProducts', methods=["GET"])
 @token_required
+@swag_from('swagger/get-companies.yaml')
 def get_companies_portfolio():
     # if company id passed
     if 'company_id' in request.args:
@@ -54,6 +57,8 @@ def get_companies_portfolio():
 
 @app.route('/PhoneRecharges', methods=['GET'])
 @token_required
+@swag_from('swagger/get-recharge.yaml')
+@swag_from('swagger/get-recharge-by-phone.yaml')
 def get_recharge():
     args = request.args
     if 'id' in args:
@@ -76,6 +81,7 @@ def get_recharge():
 
 @app.route('/PhoneRecharges', methods=['POST'])
 @token_required
+@swag_from('swagger/do-recharge.yaml')
 def do_phone_recharge():
     request_data = request.get_json()
     expected_keys = ['company_id', 'product_id', 'phone_number', 'value']
@@ -96,7 +102,6 @@ def do_phone_recharge():
                                 mimetype='application/json',
                                 headers={'Location': create_location})
             return response
-
     else:
         # missing param
         invalid_request_msg = {
@@ -106,4 +111,6 @@ def do_phone_recharge():
                             status=422, mimetype="application/json")
         return response
 
-app.run(host='0.0.0.0')
+
+if __name__ == "__main__":
+    app.run(host='127.0.0.1')

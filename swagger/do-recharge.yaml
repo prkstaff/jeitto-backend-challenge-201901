@@ -1,0 +1,31 @@
+consumes:
+  - application/json
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id : json
+      required:
+        - company_id
+        - product_id
+        - phone_number
+        - value
+      properties:
+        company_id:
+          type: string
+          description: Company ID
+        product_id:
+          type: string
+          description: Product ID
+        phone_number:
+          type: string
+          description: Phone Number
+        value:
+          type: float
+          description: Recharge Value
+responses:
+  200:
+    description: creation OK
+  422:
+    description: missing or malformed parameters

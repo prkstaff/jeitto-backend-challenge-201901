@@ -2,6 +2,7 @@ from flask import Flask
 import logging
 import sys
 import os
+from flasgger import Swagger
 
 # Environment
 
@@ -14,6 +15,7 @@ logger.addHandler(sh)
 
 # App
 app = Flask(__name__)
+swagger = Swagger(app)
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
