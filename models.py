@@ -3,6 +3,7 @@ from sqlalchemy import Column, Float, String, ForeignKey, Integer, DateTime
 from settings import app
 import datetime
 from settings import logger
+from passlib.hash import pbkdf2_sha256
 
 db = SQLAlchemy(app)
 
@@ -95,3 +96,33 @@ class PhoneRecharge(db.Model):
             logger.info(
                 status_message.format('Failed, not acceptable phone format'))
             return {'error': 'Not acceptable phone format'}
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    username = Column(String(80), unique=True, nullable=False)
+    password = Column(String, nullable=False)
+
+    def __repr__(self):
+        return str({
+            'username': self.username,
+            'password': self.password
+        })
+
+    def username_password_match(_username, _password):
+        user = User.query.filter_by(username=_username).first()
+        if user is None:
+            return False
+        if not pbkdf2_sha256.verify(_password, user.password):
+            return False
+        return True
+
+    def get_all_users():
+        return User.query.all()
+
+    def create_user(_username, _password):
+        _password = pbkdf2_sha256.hash(_password)
+        new_user = User(username=_username, password=_password)
+        db.session.add(new_user)
+        db.session.commit()

@@ -1,7 +1,7 @@
 import unittest
 from app import app
 import json
-from models import db, Company, CompanyProduct, PhoneRecharge
+from models import db, Company, CompanyProduct, PhoneRecharge, User
 import copy
 import datetime
 
@@ -11,6 +11,14 @@ class TestCrud(unittest.TestCase):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
         db.create_all()
         self.client = app.test_client()
+
+        # Create User
+        self.user = User.create_user("testuser", "admin")
+        token_response = self.client.post("/login", json={
+            "username": "testuser",
+            "password": "admin"
+        })
+        self.token = token_response.data.decode()
 
     def populate_some_data(self):
         company1 = Company(id="claro_11", name="Claro SP")
@@ -40,7 +48,7 @@ class TestCrud(unittest.TestCase):
 
     def test_get_companies_portfolio(self):
         self.populate_some_data()
-        response = self.client.get("/CompanyProducts")
+        response = self.client.get("/CompanyProducts?token={}".format(self.token))
         headers = response.headers
 
         self.check_app_json_and_status_code(response, 200)
@@ -60,7 +68,7 @@ class TestCrud(unittest.TestCase):
 
     def test_get_company_portfolio(self):
         self.populate_some_data()
-        response = self.client.get("/CompanyProducts?company_id=claro_11")
+        response = self.client.get("/CompanyProducts?company_id=claro_11&token={}".format(self.token))
 
         self.check_app_json_and_status_code(response, 200)
 
@@ -72,8 +80,7 @@ class TestCrud(unittest.TestCase):
         self.assertEqual(portfolio_expected, json.loads(response.data))
 
         # non-existent company ID test
-        response2 = self.client.get("/CompanyProducts?company_id=claro_xy")
-
+        response2 = self.client.get("/CompanyProducts?company_id=claro_xy&token={}".format(self.token))
         self.check_app_json_and_status_code(response2, 204)
 
     def test_do_recharge(self):
@@ -86,35 +93,35 @@ class TestCrud(unittest.TestCase):
         }
 
         # test valid recharge
-        response = self.client.post('/PhoneRecharges', json=new_recharge)
+        response = self.client.post('/PhoneRecharges?token={}'.format(self.token), json=new_recharge)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.headers['Location'], 'http://localhost/PhoneRecharges?id=2')
 
         # test with wrong number
         recharge_with_wrong_number = copy.deepcopy(new_recharge)
         recharge_with_wrong_number['phone_number'] = "969997509"
-        response = self.client.post('/PhoneRecharges', json=recharge_with_wrong_number)
+        response = self.client.post('/PhoneRecharges?token={}'.format(self.token), json=recharge_with_wrong_number)
         self.check_app_json_and_status_code(response, 422)
         self.assertEqual(json.loads(response.data), {"error": "Not acceptable phone format"})
         
         # test with wrong company ID
         recharge_with_wrong_cid = copy.deepcopy(new_recharge)
         recharge_with_wrong_cid['company_id'] = "claro_0"
-        response = self.client.post('/PhoneRecharges', json=recharge_with_wrong_cid)
+        response = self.client.post('/PhoneRecharges?token={}'.format(self.token), json=recharge_with_wrong_cid)
         self.check_app_json_and_status_code(response, 422)
         self.assertEqual(json.loads(response.data), {'error': 'Not a valid Recharge option'})
 
         # test with wrong product id
         recharge_with_wrong_product_id = copy.deepcopy(new_recharge)
         recharge_with_wrong_product_id['product_id'] = 'claro_0'
-        response = self.client.post('PhoneRecharges', json=recharge_with_wrong_product_id)
+        response = self.client.post('/PhoneRecharges?token={}'.format(self.token), json=recharge_with_wrong_product_id)
         self.check_app_json_and_status_code(response, 422)
         self.assertEqual(json.loads(response.data), {'error': 'Not a valid Recharge option'})
 
         # test with wrong value 
         recharge_with_wrong_value = copy.deepcopy(new_recharge)
         recharge_with_wrong_value['value'] = 7.0
-        response = self.client.post('PhoneRecharges', json=recharge_with_wrong_value)
+        response = self.client.post('/PhoneRecharges?token={}'.format(self.token), json=recharge_with_wrong_value)
         self.check_app_json_and_status_code(response, 422)
         self.assertEqual(json.loads(response.data), {'error': 'Not a valid Recharge option'})
 
@@ -123,14 +130,14 @@ class TestCrud(unittest.TestCase):
         self.populate_some_data()
 
         # Error when no filter passed
-        response = self.client.get('/PhoneRecharges', json={})
+        response = self.client.get('/PhoneRecharges?token={}'.format(self.token), json={})
         self.check_app_json_and_status_code(response, 422)
         self.assertEqual(json.loads(response.data), {
             "error": "Route requires filter like phone_number or id"})
 
         # filter by phone number
         response = self.client.get(
-            '/PhoneRecharges?phone_number=5511999999999')
+            '/PhoneRecharges?phone_number=5511999999999&token={}'.format(self.token))
         self.check_app_json_and_status_code(response, 200)
         self.assertEqual(json.loads(response.data), [{ 
             "id": 1,
@@ -141,11 +148,11 @@ class TestCrud(unittest.TestCase):
             "value": 10.00 }])
 
         # wrong phone number
-        response = self.client.get('/PhoneRecharges?phone_number=5511999000999')
+        response = self.client.get('/PhoneRecharges?phone_number=5511999000999&token={}'.format(self.token))
         self.check_app_json_and_status_code(response, 204)
 
         # filter by recharge id
-        response = self.client.get('/PhoneRecharges?id=1')
+        response = self.client.get('/PhoneRecharges?id=1&token={}'.format(self.token))
         self.check_app_json_and_status_code(response, 200)
         self.assertEqual(json.loads(response.data), { 
             "id": 1,
@@ -156,7 +163,7 @@ class TestCrud(unittest.TestCase):
             "value": 10.00 })
 
         # wrong recharge id
-        response = self.client.get('/PhoneRecharges?id=2')
+        response = self.client.get('/PhoneRecharges?id=2&token={}'.format(self.token))
         self.check_app_json_and_status_code(response, 204)
 
 

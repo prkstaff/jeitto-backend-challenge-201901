@@ -18,5 +18,4 @@ app = Flask(__name__)
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "4j%5qm*d1@lwhk_8dqib39hg!)!=inkr&8=90p4-&l*363+q_s")

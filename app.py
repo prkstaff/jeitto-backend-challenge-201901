@@ -1,10 +1,29 @@
 from flask import jsonify, Response, request
 from settings import app
-from models import CompanyProduct, Company, PhoneRecharge
+from models import CompanyProduct, Company, PhoneRecharge, User
+from decorators import token_required
 import json
+import datetime
+import jwt
 
+
+@app.route('/login', methods=['POST'])
+def get_token():
+    request_data = request.get_json()
+    username = str(request_data['username'])
+    password = str(request_data['password'])
+
+    match = User.username_password_match(username, password)
+
+    if match:
+        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=100)
+        token = jwt.encode({'exp': expiration_date}, app.config['SECRET_KEY'], algorithm='HS256')
+        return token
+    else:
+        return Response('', 401, mimetype='application/json')
 
 @app.route('/CompanyProducts', methods=["GET"])
+@token_required
 def get_companies_portfolio():
     # if company id passed
     if 'company_id' in request.args:
@@ -34,6 +53,7 @@ def get_companies_portfolio():
 
 
 @app.route('/PhoneRecharges', methods=['GET'])
+@token_required
 def get_recharge():
     args = request.args
     if 'id' in args:
@@ -55,6 +75,7 @@ def get_recharge():
 
 
 @app.route('/PhoneRecharges', methods=['POST'])
+@token_required
 def do_phone_recharge():
     request_data = request.get_json()
     expected_keys = ['company_id', 'product_id', 'phone_number', 'value']
@@ -84,12 +105,5 @@ def do_phone_recharge():
         response = Response(json.dumps(invalid_request_msg),
                             status=422, mimetype="application/json")
         return response
-# {
-#    "company_id": "claro_11",
-#    "product_id": "claro_10",
-#    "phone_number": "5511999999999",
-#    "value": 10.00
-# }
-
 
 app.run(host='0.0.0.0')
