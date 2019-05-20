@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 # apply db models
 flask db upgrade

@@ -1,4 +1,4 @@
-FROM python:3.6-alpine3.7
+FROM python:3.6-alpine3.6
 
 ENV PROJECT_ROOT /proj
 
@@ -15,9 +15,9 @@ WORKDIR ${PROJECT_ROOT}
 
 ADD ./ .
 
-RUN apk --no-cache add --virtual .build-dependencies build-base gcc \
+RUN apk --no-cache add --virtual .build-dependencies build-base \
     openssl-dev libffi-dev \
-    && pip install -r requirements.dev.txt \
+    && pip install -r requirements.txt \
     && rm -rf .cache/pip \
     && apk del .build-dependencies
 
