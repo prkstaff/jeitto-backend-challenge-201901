@@ -3,12 +3,6 @@
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
 version: 2
-general:
-  branches:
-    only:
-      - master
-      - stage
-      - dev
 jobs:
   test:
     docker:
@@ -60,7 +54,7 @@ jobs:
     environment:
       - PROJECT_NAME: "jeitto-test"
       - GOOGLE_PROJECT_ID: "jeitto-test"
-      - GOOGLE_COMPUTE_ZONE: "us-central-1"
+      - GOOGLE_COMPUTE_ZONE: "us-central1"
       - GOOGLE_CLUSTER_NAME: "jeitto"
     steps:
       - checkout
@@ -97,3 +91,8 @@ workflows:
     jobs:
       - test
       - deploy_to_staging
+          requires:
+            - test
+          filters:
+            branches:
+              only: stage
