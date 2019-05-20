@@ -54,7 +54,7 @@ jobs:
     environment:
       - PROJECT_NAME: "jeitto-test"
       - GOOGLE_PROJECT_ID: "jeitto-test"
-      - GOOGLE_COMPUTE_ZONE: "us-central1"
+      - GOOGLE_COMPUTE_ZONE: "us-central1-a"
       - GOOGLE_CLUSTER_NAME: "jeitto"
     steps:
       - checkout
