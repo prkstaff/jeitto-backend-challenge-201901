@@ -1,5 +1,7 @@
 # Jeitto Backend Challenge - Restful API for Phone Recharge
 
+[![CircleCI](https://circleci.com/gh/prkstaff/jeitto-backend-challenge-201901/tree/stage.svg?style=svg)](https://circleci.com/gh/prkstaff/jeitto-backend-challenge-201901/tree/stage)
+
 ## Requirements:
 - Python3 
 - Pip3
