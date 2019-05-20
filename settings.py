@@ -4,7 +4,7 @@ import sys
 import os
 from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from models import User
 
 # Environment
 
@@ -25,5 +25,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "4j%5qm*d1@lwhk_8dqib39hg!)!=inkr&8=90p4-&l*363+q_s")
 
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+db.create_all()
+db.session.commit()
+admin = User.create_user('admin', 'admin')
 
