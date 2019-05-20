@@ -6,7 +6,7 @@ version: 2
 general:
 
 jobs:
-  build:
+  test:
     branches:
       only:
         - master
@@ -54,3 +54,9 @@ jobs:
             #      - store_artifacts:
             #          path: test-reports
             #          destination: test-reports
+
+workflows:
+  version: 2
+  ultimate_pipeline:
+    jobs:
+      - test
