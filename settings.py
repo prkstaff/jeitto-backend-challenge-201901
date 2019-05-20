@@ -4,9 +4,6 @@ import sys
 import os
 from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
-from models import User
-
-# Environment
 
 # Logging
 logger = logging.getLogger('flask')

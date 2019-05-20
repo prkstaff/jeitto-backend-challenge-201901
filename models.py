@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Float, String, ForeignKey, Integer, DateTime
+from sqlalchemy import ForeignKey
 from settings import app
 import datetime
 from settings import logger
@@ -10,15 +10,15 @@ db = SQLAlchemy(app)
 
 class Company(db.Model):
     __tablename__ = "Company"
-    id = Column(String, primary_key=True)
-    name = Column(String, nullable=False)
+    id = db.Column(db.String, primary_key=True)
+    name = db.Column(db.String, nullable=False)
 
 
 class CompanyProduct(db.Model):
     __tablename__ = "CompanyProduct"
-    id = Column(String, primary_key=True)
-    value = Column(Float, nullable=False)
-    company_id = Column(String, ForeignKey('Company.id'))
+    id = db.Column(db.String, primary_key=True)
+    value = db.Column(db.Float, nullable=False)
+    company_id = db.Column(db.String, ForeignKey('Company.id'))
 
     def json(self):
         return {"id": self.id, "value": self.value}
@@ -30,12 +30,12 @@ class CompanyProduct(db.Model):
 
 class PhoneRecharge(db.Model):
     __tablename__ = "PhoneRecharge"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(DateTime, default=datetime.datetime.now())
-    company_id = Column(String, ForeignKey('Company.id'))
-    product_id = Column(String, ForeignKey('CompanyProduct.id'))
-    phone_number = Column(String, nullable=False)
-    value = Column(Float, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.now())
+    company_id = db.Column(db.String, ForeignKey('Company.id'))
+    product_id = db.Column(db.String, ForeignKey('CompanyProduct.id'))
+    phone_number = db.Column(db.String, nullable=False)
+    value = db.Column(db.Float, nullable=False)
 
     def get_datetime_string(self):
         return self.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
@@ -100,9 +100,9 @@ class PhoneRecharge(db.Model):
 
 class User(db.Model):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    username = Column(String(80), unique=True, nullable=False)
-    password = Column(String, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)
 
     def __repr__(self):
         return str({
