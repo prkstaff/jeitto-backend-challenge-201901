@@ -27,5 +27,3 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "4j%5qm*d1@lwhk_8dqib39hg!)!=
 db = SQLAlchemy(app)
 db.create_all()
 db.session.commit()
-admin = User.create_user('admin', 'admin')
-
