@@ -90,7 +90,7 @@ workflows:
   ultimate_pipeline:
     jobs:
       - test
-      - deploy_to_staging
+      - deploy_to_staging:
           requires:
             - test
           filters:
